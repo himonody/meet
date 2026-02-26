@@ -91,3 +91,41 @@ COMMENT ON COLUMN app_contact.contact_url IS '跳转协议链接';
 COMMENT ON COLUMN app_contact.is_active IS '是否启用';
 
 CREATE INDEX idx_contact_type ON app_contact (contact_type,is_active);
+
+
+
+/*
+
+INSERT INTO app_profile (
+
+  lang,
+  nickname,
+  photo_main_url,
+  photo_gallery_urls,
+  country_id,
+  location_id,
+  category_id,
+  venue_id,
+  badge_code,
+  age,
+  height_cm,
+  weight_kg,
+  bust_size,
+  service_items,
+  bio_description,
+  lang_sort,
+  country_sort,
+  location_sort,
+  category_sort,
+  venue_sort,
+  is_active
+) VALUES
+('id','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('vi','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('ms','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('en','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('zh-cn','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('ja','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('zh-tw','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true),
+('ko','Isabella','https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop',NULL,1,1,1,1,1,22,160,45,'36D','3P,口爆,双飞,毒龙','娇小玲珑',0,0,0,0,0,true);
+*/
