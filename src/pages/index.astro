@@ -1,17 +1,916 @@
 ---
+import '../styles/global.css';
 
+const defaultLang = 'zh-CN';
+const countries = ['sg', 'my', 'th', 'id', 'ph'];
+const locations = ['all', 'downtown', 'marina', 'orchard', 'sentosa', 'clarke'];
+const categories = ['club', 'ktv', 'nightParty', 'privateSession'];
+const i18n = {
+  'zh-CN': {
+    countries: {
+      sg: '新加坡',
+      my: '马来西亚',
+      th: '泰国',
+      id: '印度尼西亚',
+      ph: '菲律宾'
+    },
+    locations: {
+      all: '全部地区',
+      downtown: '市中心',
+      marina: '滨海湾',
+      orchard: '乌节路',
+      sentosa: '圣淘沙',
+      clarke: '克拉码头'
+    },
+    categories: {
+      club: '水疗会所',
+      ktv: 'KTV',
+      nightParty: '夜场派对',
+      privateSession: '私人专场'
+    },
+    venues: {
+      club: ['天空会所', '金色会馆', '水晶殿堂', '钻石名邸'],
+      ktv: ['皇室KTV', '金嗓之夜', '明星卡拉OK', '奢华包厢'],
+      nightParty: ['霓虹之夜', '日蚀', '午夜玫瑰', '地下之城']
+    },
+    labels: {
+      loadMore: '加载更多',
+      height: '身高',
+      languages: '语言',
+      availability: '状态',
+      availableNow: '可预约',
+      book: '立即预约',
+      view: '查看作品',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: '招募',
+      filterHot: '热门',
+      filterRecommend: '推荐',
+      filterNew: '新品',
+      filterYoung: '年龄小'
+    }
+  },
+  'zh-TW': {
+    countries: {
+      sg: '新加坡',
+      my: '馬來西亞',
+      th: '泰國',
+      id: '印度尼西亞',
+      ph: '菲律賓'
+    },
+    locations: {
+      all: '全部地區',
+      downtown: '市中心',
+      marina: '濱海灣',
+      orchard: '烏節路',
+      sentosa: '聖淘沙',
+      clarke: '克拉碼頭'
+    },
+    categories: {
+      club: '水療會所',
+      ktv: 'KTV',
+      nightParty: '夜場派對',
+      privateSession: '私人專場'
+    },
+    venues: {
+      club: ['天空會所', '金色會館', '水晶殿堂', '鑽石名邸'],
+      ktv: ['皇室KTV', '金嗓之夜', '明星卡拉OK', '奢華包廂'],
+      nightParty: ['霓虹之夜', '日蝕', '午夜玫瑰', '地下之城']
+    },
+    labels: {
+      loadMore: '載入更多',
+      height: '身高',
+      languages: '語言',
+      availability: '狀態',
+      availableNow: '可預約',
+      book: '立即預約',
+      view: '查看作品',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: '招募',
+      filterHot: '熱門',
+      filterRecommend: '推薦',
+      filterNew: '新品',
+      filterYoung: '年齡小'
+    }
+  },
+  en: {
+    countries: {
+      sg: 'Singapore',
+      my: 'Malaysia',
+      th: 'Thailand',
+      id: 'Indonesia',
+      ph: 'Philippines'
+    },
+    locations: {
+      all: 'All Locations',
+      downtown: 'Downtown',
+      marina: 'Marina Bay',
+      orchard: 'Orchard',
+      sentosa: 'Sentosa',
+      clarke: 'Clarke Quay'
+    },
+    categories: {
+      club: 'Club',
+      ktv: 'KTV',
+      nightParty: 'Night Party',
+      privateSession: 'Private Session'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: 'Load More',
+      height: 'Height',
+      languages: 'Languages',
+      availability: 'Availability',
+      availableNow: 'Available Now',
+      book: 'Book Appointment',
+      view: 'View Portfolio',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: 'Recruit',
+      filterHot: 'Hot',
+      filterRecommend: 'Recommended',
+      filterNew: 'New',
+      filterYoung: 'Young'
+    }
+  },
+  ms: {
+    countries: {
+      sg: 'Singapura',
+      my: 'Malaysia',
+      th: 'Thailand',
+      id: 'Indonesia',
+      ph: 'Filipina'
+    },
+    locations: {
+      all: 'Semua Lokasi',
+      downtown: 'Pusat Bandar',
+      marina: 'Marina Bay',
+      orchard: 'Orchard',
+      sentosa: 'Sentosa',
+      clarke: 'Clarke Quay'
+    },
+    categories: {
+      club: 'Kelab',
+      ktv: 'KTV',
+      nightParty: 'Parti Malam',
+      privateSession: 'Sesi Peribadi'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: 'Muat Lagi',
+      height: 'Ketinggian',
+      languages: 'Bahasa',
+      availability: 'Ketersediaan',
+      availableNow: 'Tersedia Kini',
+      book: 'Tempah Sekarang',
+      view: 'Lihat Portfolio',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: 'Rekrut',
+      filterHot: 'Popular',
+      filterRecommend: 'Disyorkan',
+      filterNew: 'Baharu',
+      filterYoung: 'Lebih Muda'
+    }
+  },
+  id: {
+    countries: {
+      sg: 'Singapura',
+      my: 'Malaysia',
+      th: 'Thailand',
+      id: 'Indonesia',
+      ph: 'Filipina'
+    },
+    locations: {
+      all: 'Semua Lokasi',
+      downtown: 'Pusat Kota',
+      marina: 'Marina Bay',
+      orchard: 'Orchard',
+      sentosa: 'Sentosa',
+      clarke: 'Clarke Quay'
+    },
+    categories: {
+      club: 'Klub',
+      ktv: 'KTV',
+      nightParty: 'Pesta Malam',
+      privateSession: 'Sesi Privat'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: 'Muat Lagi',
+      height: 'Tinggi',
+      languages: 'Bahasa',
+      availability: 'Ketersediaan',
+      availableNow: 'Tersedia Sekarang',
+      book: 'Pesan Sekarang',
+      view: 'Lihat Portofolio',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: 'Rekrut',
+      filterHot: 'Populer',
+      filterRecommend: 'Rekomendasi',
+      filterNew: 'Baru',
+      filterYoung: 'Lebih Muda'
+    }
+  },
+  vi: {
+    countries: {
+      sg: 'Singapore',
+      my: 'Malaysia',
+      th: 'Thái Lan',
+      id: 'Indonesia',
+      ph: 'Philippines'
+    },
+    locations: {
+      all: 'Tất cả khu vực',
+      downtown: 'Trung tâm',
+      marina: 'Marina Bay',
+      orchard: 'Orchard',
+      sentosa: 'Sentosa',
+      clarke: 'Clarke Quay'
+    },
+    categories: {
+      club: 'Câu lạc bộ',
+      ktv: 'KTV',
+      nightParty: 'Tiệc đêm',
+      privateSession: 'Phiên riêng'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: 'Tải thêm',
+      height: 'Chiều cao',
+      languages: 'Ngôn ngữ',
+      availability: 'Tình trạng',
+      availableNow: 'Sẵn sàng',
+      book: 'Đặt ngay',
+      view: 'Xem hồ sơ',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: 'Tuyển dụng',
+      filterHot: 'Nổi bật',
+      filterRecommend: 'Đề xuất',
+      filterNew: 'Mới',
+      filterYoung: 'Trẻ'
+    }
+  },
+  ko: {
+    countries: {
+      sg: '싱가포르',
+      my: '말레이시아',
+      th: '태국',
+      id: '인도네시아',
+      ph: '필리핀'
+    },
+    locations: {
+      all: '전체 지역',
+      downtown: '도심',
+      marina: '마리나 베이',
+      orchard: '오차드',
+      sentosa: '센토사',
+      clarke: '클라키 키'
+    },
+    categories: {
+      club: '클럽',
+      ktv: 'KTV',
+      nightParty: '나이트 파티',
+      privateSession: '프라이빗 세션'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: '더 보기',
+      height: '키',
+      languages: '언어',
+      availability: '상태',
+      availableNow: '예약 가능',
+      book: '예약하기',
+      view: '포트폴리오',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: '모집',
+      filterHot: '인기',
+      filterRecommend: '추천',
+      filterNew: '신규',
+      filterYoung: '젊음'
+    }
+  },
+  ja: {
+    countries: {
+      sg: 'シンガポール',
+      my: 'マレーシア',
+      th: 'タイ',
+      id: 'インドネシア',
+      ph: 'フィリピン'
+    },
+    locations: {
+      all: 'すべてのエリア',
+      downtown: 'ダウンタウン',
+      marina: 'マリーナベイ',
+      orchard: 'オーチャード',
+      sentosa: 'セントーサ',
+      clarke: 'クラーク・キー'
+    },
+    categories: {
+      club: 'クラブ',
+      ktv: 'KTV',
+      nightParty: 'ナイトパーティー',
+      privateSession: 'プライベートセッション'
+    },
+    venues: {
+      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
+      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
+      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+    },
+    labels: {
+      loadMore: 'もっと見る',
+      height: '身長',
+      languages: '言語',
+      availability: 'ステータス',
+      availableNow: '予約可能',
+      book: '予約する',
+      view: 'ポートフォリオ',
+      whatsapp: 'WhatsApp',
+      telegram: 'Telegram',
+      recruit: '募集',
+      filterHot: '人気',
+      filterRecommend: 'おすすめ',
+      filterNew: '新着',
+      filterYoung: '若い'
+    }
+  }
+};
+
+const t = i18n[defaultLang];
+
+const models = [
+  { id: 1, name: 'Sophia', location: 'marina', tag: 'filterHot', image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop' },
+  { id: 2, name: 'Isabella', location: 'orchard', tag: 'filterRecommend', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop' },
+  { id: 3, name: 'Emma', location: 'downtown', tag: 'filterNew', image: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=600&fit=crop' },
+  { id: 4, name: 'Olivia', location: 'sentosa', tag: 'filterYoung', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop' },
+  { id: 5, name: 'Ava', location: 'clarke', tag: 'filterHot', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=600&fit=crop' },
+  { id: 6, name: 'Mia', location: 'marina', tag: 'filterRecommend', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop' },
+  { id: 7, name: 'Charlotte', location: 'orchard', tag: 'filterNew', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=600&fit=crop' },
+  { id: 8, name: 'Amelia', location: 'downtown', tag: 'filterYoung', image: 'https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=400&h=600&fit=crop' },
+];
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>VIP Elite Showcase</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="min-h-screen pb-24 relative">
+		<!-- Top Header -->
+		<header class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-[var(--neon-purple)]/30">
+			<div class="max-w-7xl mx-auto px-4 py-3 pl-24">
+				<div class="flex items-center justify-between gap-4">
+					<!-- Country Tabs -->
+					<div class="flex-1 overflow-x-auto scrollbar-hide smooth-scroll" id="countryScroll">
+						<div class="flex gap-2 min-w-max">
+							{countries.map((country, index) => (
+								<button 
+									class={`country-tab px-6 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-underline text-[var(--neon-gold)]' : 'text-[var(--text-secondary)] hover:text-white'}`}
+									data-country={country}
+								>
+									{t.countries[country]}
+								</button>
+							))}
+						</div>
+					</div>
+
+					<!-- Language Switcher (fixed outside header) -->
+				</div>
+			</div>
+		</header>
+
+		<!-- Fixed Language Selector -->
+		<div class="language-selector fixed top-4 left-4 z-[60]">
+			<button id="languageTrigger" class="language-btn flex items-center gap-2 px-2 py-2 text-sm font-semibold transition-all neon-underline text-[var(--neon-gold)]">
+				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"></path>
+				</svg>
+				<span class="text-xs font-semibold tracking-wide" id="currentLanguage">简</span>
+			</button>
+			<div id="languageDropdown" class="language-dropdown hidden mt-2 w-56 rounded-2xl glass-dark neon-border-purple neon-glow-purple overflow-hidden">
+				<button class="language-item" data-lang="English" data-short="EN" data-code="en">English</button>
+				<button class="language-item" data-lang="Bahasa Melayu" data-short="BM" data-code="ms">Bahasa Melayu</button>
+				<button class="language-item" data-lang="Bahasa Indonesia" data-short="ID" data-code="id">Bahasa Indonesia</button>
+				<button class="language-item language-selected" data-lang="简体中文" data-short="简" data-code="zh-CN">简体中文</button>
+				<button class="language-item" data-lang="繁體中文" data-short="繁" data-code="zh-TW">繁體中文</button>
+				<button class="language-item" data-lang="Tiếng Việt" data-short="VI" data-code="vi">Tiếng Việt</button>
+				<button class="language-item" data-lang="한국어" data-short="KR" data-code="ko">한국어</button>
+				<button class="language-item" data-lang="日本語" data-short="JP" data-code="ja">日本語</button>
+			</div>
+		</div>
+
+		<!-- Filter Section -->
+		<section id="filterSection" class="fixed top-[72px] left-0 right-0 z-40 glass-dark border-b border-[var(--neon-purple)]/20">
+			<div class="max-w-7xl mx-auto px-4 py-2">
+				<!-- Location Dropdown + Filters -->
+				<div class="overflow-x-auto overflow-y-visible scrollbar-hide smooth-scroll mb-2">
+					<div class="flex items-center gap-2 min-w-max">
+						<div class="relative">
+							<button id="locationTrigger" class="location-trigger w-28 md:w-36 px-4 py-2.5 rounded-xl glass text-sm font-medium neon-border-purple transition-all flex items-center justify-between gap-2" type="button">
+								<span id="currentLocation" class="whitespace-nowrap">{t.locations.all}</span>
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+								</svg>
+							</button>
+							<div id="locationDropdown" class="language-dropdown hidden w-48 rounded-2xl glass-dark neon-border-purple neon-glow-purple overflow-hidden z-[60]">
+								{locations.map((location) => (
+									<button class={`location-item language-item ${location === 'all' ? 'language-selected' : ''}`} data-location={location} type="button">
+										{t.locations[location]}
+									</button>
+								))}
+							</div>
+						</div>
+						<button class="filter-tag filter-active px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap" data-label="filterHot">
+							{t.labels.filterHot}
+						</button>
+						<button class="filter-tag px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap" data-label="filterRecommend">
+							{t.labels.filterRecommend}
+						</button>
+						<button class="filter-tag px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap" data-label="filterNew">
+							{t.labels.filterNew}
+						</button>
+						<button class="filter-tag px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap" data-label="filterYoung">
+							{t.labels.filterYoung}
+						</button>
+					</div>
+				</div>
+
+				<!-- Category Tabs -->
+				<div class="overflow-x-auto scrollbar-hide smooth-scroll" id="categoryScroll">
+					<div class="flex gap-2 min-w-max">
+						{categories.map((category, index) => (
+							<button 
+								class={`category-tab px-6 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-gold neon-glow-gold text-[var(--neon-gold)]' : 'glass hover:neon-glow-purple'}`}
+								data-category={category}
+							>
+								{t.categories[category]}
+							</button>
+						))}
+					</div>
+				</div>
+
+				<!-- Venue Section (Conditional) -->
+				<section id="venueSection" class="mt-2">
+					<div class="overflow-x-auto scrollbar-hide smooth-scroll" id="venueScroll">
+						<div class="flex gap-2 min-w-max" id="venueContainer">
+							<!-- Venues will be dynamically inserted here -->
+						</div>
+					</div>
+				</section>
+			</div>
+		</section>
+
+		<div id="filterSpacer" class="h-[196px]"></div>
+
+		<!-- Main Content Area -->
+		<main class="pt-0 px-4 max-w-7xl mx-auto" id="mainContent">
+			<!-- Model Grid -->
+			<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-2 pb-6">
+				{models.map((model) => (
+					<div class="model-card group cursor-pointer fade-in" data-model-id={model.id}>
+						<div class="relative overflow-hidden rounded-2xl aspect-[3/4] transition-all duration-500 group-hover:scale-[1.03] cinematic-shadow group-hover:neon-glow-purple">
+							<img 
+								src={model.image} 
+								alt={model.name}
+								class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+								loading="lazy"
+							/>
+							<!-- Gradient Overlay -->
+							<div class="absolute inset-0 gradient-overlay"></div>
+							<div class="absolute inset-0 bg-gradient-to-t from-[var(--purple-deep)]/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+							
+							<!-- VIP Badge -->
+							<div class="absolute top-3 right-3">
+								<span class={`vip-badge tag-${model.tag} px-3 py-1 rounded-full text-xs font-bold text-black uppercase tracking-wide`}>
+									{t.labels[model.tag] ?? model.tag}
+								</span>
+							</div>
+
+							<!-- Info -->
+							<div class="absolute bottom-0 left-0 right-0 p-4">
+								<h3 class="text-lg font-bold mb-1 text-white drop-shadow-lg">{model.name}</h3>
+								<div class="flex items-center gap-1.5 text-sm text-[var(--neon-purple)]">
+									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+										<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+									</svg>
+									<span class="font-medium" data-location={model.location}>{t.locations[model.location]}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+
+			<!-- Load More Indicator -->
+			<div class="text-center py-8">
+				<button class="px-8 py-3 rounded-full glass hover:neon-border-gold hover:neon-glow-gold transition-all font-semibold" data-label="loadMore">
+					{t.labels.loadMore}
+				</button>
+			</div>
+		</main>
+
+		<!-- Modal Detail View -->
+		<div id="modelModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+			<div class="modal-content glass-dark rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide neon-border-purple neon-glow-purple">
+				<div class="relative">
+					<!-- Close Button -->
+					<button id="closeModal" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full glass hover:neon-glow-magenta flex items-center justify-center transition-all">
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+						</svg>
+					</button>
+
+					<div class="grid md:grid-cols-2 gap-6 p-6">
+						<!-- Image -->
+						<div class="relative rounded-2xl overflow-hidden aspect-[3/4]">
+							<img id="modalImage" src="" alt="" class="w-full h-full object-cover" />
+						</div>
+
+						<!-- Details -->
+						<div class="flex flex-col justify-center space-y-6">
+							<div>
+								<span id="modalTag" class="vip-badge inline-block px-4 py-1.5 rounded-full text-sm font-bold text-black uppercase tracking-wide mb-4"></span>
+								<h2 id="modalName" class="text-4xl font-bold mb-3 text-white"></h2>
+								<div class="flex items-center gap-2 text-[var(--neon-purple)]">
+									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+										<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+									</svg>
+									<span id="modalLocation" class="font-semibold"></span>
+								</div>
+							</div>
+
+							<div class="space-y-4">
+								<div class="flex items-center gap-3">
+									<span class="text-[var(--text-secondary)] text-sm" data-label="height">{t.labels.height}</span>
+									<span class="font-semibold text-white">170 cm</span>
+								</div>
+								<div class="flex items-center gap-3">
+									<span class="text-[var(--text-secondary)] text-sm" data-label="languages">{t.labels.languages}</span>
+									<span class="font-semibold text-white">English, Mandarin</span>
+								</div>
+								<div class="flex items-center gap-3">
+									<span class="text-[var(--text-secondary)] text-sm" data-label="availability">{t.labels.availability}</span>
+									<span class="font-semibold text-[var(--neon-gold)] neon-glow-gold" data-label="availableNow">{t.labels.availableNow}</span>
+								</div>
+							</div>
+
+							<div class="pt-6 space-y-3">
+								<button class="w-full px-6 py-4 rounded-xl bg-gradient-to-r from-[var(--neon-gold)] to-[var(--neon-magenta)] text-black font-bold hover:neon-glow-gold hover:scale-[1.02] transition-all uppercase tracking-wide" data-label="book">
+									{t.labels.book}
+								</button>
+								<button class="w-full px-6 py-4 rounded-xl glass neon-border-purple hover:neon-glow-purple transition-all font-semibold" data-label="view">
+									{t.labels.view}
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Fixed Bottom Contact Bar -->
+		<div class="fixed bottom-6 left-0 right-0 z-50 px-4 bounce-subtle">
+			<div class="max-w-2xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-3">
+				<a 
+					href="https://wa.me/1234567890" 
+					target="_blank"
+					class="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#20BA5A] text-white font-bold transition-all hover:scale-[1.05] neon-glow-gold shadow-2xl"
+				>
+					<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+						<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+					</svg>
+					<span data-label="whatsapp">{t.labels.whatsapp}</span>
+				</a>
+				<a 
+					href="https://t.me/username" 
+					target="_blank"
+					class="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-gradient-to-r from-[#0088cc] to-[#0077b5] text-white font-bold transition-all hover:scale-[1.05] neon-glow-blue shadow-2xl"
+				>
+					<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+						<path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+					</svg>
+					<span data-label="telegram">{t.labels.telegram}</span>
+				</a>
+				<a 
+					href="#recruit"
+					class="col-span-2 md:col-span-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-gradient-to-r from-[var(--neon-magenta)] to-[var(--neon-purple)] text-white font-bold transition-all hover:scale-[1.05] neon-glow-magenta shadow-2xl"
+				>
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20v-1a7 7 0 0114 0v1"></path>
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 8v6m3-3h-6"></path>
+					</svg>
+					<span data-label="recruit">{t.labels.recruit}</span>
+				</a>
+			</div>
+		</div>
+
+		<script define:vars={{ defaultLang, i18n, models }}>
+			let currentI18n = i18n[defaultLang];
+			let currentCategory = 'club';
+			let currentLanguage = '简体中文';
+			let currentVenue = null;
+
+			// Country tabs
+			document.querySelectorAll('.country-tab').forEach(tab => {
+				tab.addEventListener('click', () => {
+					document.querySelectorAll('.country-tab').forEach(t => {
+						t.classList.remove('neon-underline', 'text-[var(--neon-gold)]');
+						t.classList.add('text-[var(--text-secondary)]');
+					});
+					tab.classList.add('neon-underline', 'text-[var(--neon-gold)]');
+					tab.classList.remove('text-[var(--text-secondary)]');
+				});
+			});
+
+			// Filter tags
+			document.querySelectorAll('.filter-tag').forEach(tag => {
+				tag.addEventListener('click', () => {
+					document.querySelectorAll('.filter-tag').forEach(t => {
+						t.classList.remove('filter-active', 'neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
+						t.classList.add('glass');
+					});
+					tag.classList.add('filter-active', 'neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
+					tag.classList.remove('glass');
+				});
+			});
+
+			// Category tabs
+			document.querySelectorAll('.category-tab').forEach(tab => {
+				tab.addEventListener('click', () => {
+					const category = tab.dataset.category;
+					currentCategory = category;
+					
+					document.querySelectorAll('.category-tab').forEach(t => {
+						t.classList.remove('neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
+						t.classList.add('glass');
+					});
+					tab.classList.add('neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
+					tab.classList.remove('glass');
+
+					updateVenueSection(category);
+				});
+			});
+
+			function updateVenueSection(category, dict = currentI18n) {
+				const venueSection = document.getElementById('venueSection');
+				const venueContainer = document.getElementById('venueContainer');
+				if (category === 'privateSession') {
+					venueSection.style.display = 'none';
+				} else {
+					venueSection.style.display = 'block';
+					
+					const categoryVenues = dict.venues[category] || [];
+					venueContainer.innerHTML = categoryVenues.map((venue, index) => `
+						<button class="venue-pill px-6 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-magenta neon-glow-magenta text-[var(--neon-magenta)]' : 'glass hover:neon-glow-purple'}" data-venue="${venue}">
+							${venue}
+						</button>
+					`).join('');
+
+					document.querySelectorAll('.venue-pill').forEach(pill => {
+						pill.addEventListener('click', () => {
+							document.querySelectorAll('.venue-pill').forEach(p => {
+								p.classList.remove('neon-border-magenta', 'neon-glow-magenta', 'text-[var(--neon-magenta)]');
+								p.classList.add('glass');
+							});
+							pill.classList.add('neon-border-magenta', 'neon-glow-magenta', 'text-[var(--neon-magenta)]');
+							pill.classList.remove('glass');
+							currentVenue = pill.dataset.venue;
+						});
+					});
+				}
+				updateFilterSpacer();
+			}
+
+			function updateFilterSpacer() {
+				const header = document.querySelector('header');
+				const filterSection = document.getElementById('filterSection');
+				const spacer = document.getElementById('filterSpacer');
+				if (!header || !filterSection || !spacer) return;
+				const topOffset = parseFloat(getComputedStyle(filterSection).top) || 0;
+				const total = topOffset + filterSection.offsetHeight;
+				spacer.style.height = `${total}px`;
+			}
+
+			// Location dropdown
+			const locationTrigger = document.getElementById('locationTrigger');
+			const locationDropdown = document.getElementById('locationDropdown');
+			const currentLocation = document.getElementById('currentLocation');
+
+			if (locationTrigger && locationDropdown) {
+				const originalParent = locationDropdown.parentElement;
+				locationTrigger.addEventListener('click', (e) => {
+					e.stopPropagation();
+					locationDropdown.classList.toggle('hidden');
+					locationDropdown.classList.toggle('dropdown-open');
+					if (!locationDropdown.classList.contains('hidden')) {
+						const rect = locationTrigger.getBoundingClientRect();
+						locationDropdown.style.position = 'fixed';
+						locationDropdown.style.left = `${rect.left}px`;
+						locationDropdown.style.top = `${rect.bottom + 8}px`;
+						locationDropdown.style.zIndex = '70';
+						document.body.appendChild(locationDropdown);
+					} else if (originalParent && !originalParent.contains(locationDropdown)) {
+						originalParent.appendChild(locationDropdown);
+					}
+				});
+
+				document.querySelectorAll('.location-item').forEach(item => {
+					item.addEventListener('click', () => {
+						currentLocation.textContent = item.textContent;
+						document.querySelectorAll('.location-item').forEach(i => i.classList.remove('language-selected'));
+						item.classList.add('language-selected');
+						locationDropdown.classList.add('hidden');
+						locationDropdown.classList.remove('dropdown-open');
+						if (originalParent && !originalParent.contains(locationDropdown)) {
+							originalParent.appendChild(locationDropdown);
+						}
+					});
+				});
+			}
+
+			// Initialize venue section
+			updateVenueSection('club');
+
+			// Modal functionality
+			const modal = document.getElementById('modelModal');
+			const closeModalBtn = document.getElementById('closeModal');
+
+			document.querySelectorAll('.model-card').forEach(card => {
+				card.addEventListener('click', () => {
+					const modelId = parseInt(card.dataset.modelId);
+					const model = models.find(m => m.id === modelId);
+					
+					if (model) {
+						document.getElementById('modalImage').src = model.image;
+						document.getElementById('modalImage').alt = model.name;
+						document.getElementById('modalName').textContent = model.name;
+						document.getElementById('modalLocation').textContent = currentI18n.locations[model.location] || model.location;
+						const modalTag = document.getElementById('modalTag');
+						modalTag.textContent = currentI18n.labels[model.tag] || model.tag;
+						modalTag.className = `vip-badge tag-${model.tag} inline-block px-4 py-1.5 rounded-full text-sm font-bold text-black uppercase tracking-wide mb-4`;
+						
+						modal.classList.remove('hidden');
+						modal.classList.add('flex');
+						document.body.style.overflow = 'hidden';
+					}
+				});
+			});
+
+			closeModalBtn.addEventListener('click', () => {
+				modal.classList.add('hidden');
+				modal.classList.remove('flex');
+				document.body.style.overflow = 'auto';
+			});
+
+			modal.addEventListener('click', (e) => {
+				if (e.target === modal) {
+					modal.classList.add('hidden');
+					modal.classList.remove('flex');
+					document.body.style.overflow = 'auto';
+				}
+			});
+
+			function applyLanguage(code) {
+				const dict = i18n[code] || i18n[defaultLang];
+				currentI18n = dict;
+				document.documentElement.lang = code;
+
+				document.querySelectorAll('.country-tab').forEach(tab => {
+					const key = tab.dataset.country;
+					tab.textContent = dict.countries[key] || key;
+				});
+
+				document.querySelectorAll('.category-tab').forEach(tab => {
+					const key = tab.dataset.category;
+					tab.textContent = dict.categories[key] || key;
+				});
+
+				document.querySelectorAll('[data-location]').forEach(el => {
+					const key = el.dataset.location;
+					el.textContent = dict.locations[key] || key;
+				});
+
+				document.querySelectorAll('[data-label]').forEach(el => {
+					const key = el.dataset.label;
+					el.textContent = dict.labels[key] || el.textContent;
+				});
+
+				document.querySelectorAll('.location-item').forEach(item => {
+					const key = item.dataset.location;
+					item.textContent = dict.locations[key] || key;
+				});
+				if (currentLocation) {
+					const selected = document.querySelector('.location-item.language-selected');
+					currentLocation.textContent = selected ? selected.textContent : dict.locations.all;
+				}
+
+				updateVenueSection(currentCategory, dict);
+			}
+
+			// Language selector dropdown
+			const languageTrigger = document.getElementById('languageTrigger');
+			const languageDropdown = document.getElementById('languageDropdown');
+			const currentLanguageLabel = document.getElementById('currentLanguage');
+
+			languageTrigger.addEventListener('click', (e) => {
+				e.stopPropagation();
+				languageDropdown.classList.toggle('hidden');
+				languageDropdown.classList.toggle('dropdown-open');
+			});
+
+			document.querySelectorAll('.language-item').forEach(item => {
+				item.addEventListener('click', () => {
+					currentLanguage = item.dataset.lang;
+					currentLanguageLabel.textContent = item.dataset.short || currentLanguage;
+					applyLanguage(item.dataset.code || defaultLang);
+					
+					document.querySelectorAll('.language-item').forEach(i => i.classList.remove('language-selected'));
+					item.classList.add('language-selected');
+					languageDropdown.classList.add('hidden');
+					languageDropdown.classList.remove('dropdown-open');
+				});
+			});
+
+			applyLanguage(defaultLang);
+			updateFilterSpacer();
+			window.addEventListener('resize', updateFilterSpacer);
+			window.addEventListener('scroll', () => {
+				if (locationDropdown && !locationDropdown.classList.contains('hidden')) {
+					locationDropdown.classList.add('hidden');
+					locationDropdown.classList.remove('dropdown-open');
+					if (originalParent && !originalParent.contains(locationDropdown)) {
+						originalParent.appendChild(locationDropdown);
+					}
+				}
+			});
+
+			document.addEventListener('click', () => {
+				languageDropdown.classList.add('hidden');
+				languageDropdown.classList.remove('dropdown-open');
+			});
+
+			// Smooth scroll for horizontal tabs
+			const scrollContainers = ['countryScroll', 'categoryScroll', 'venueScroll'];
+			scrollContainers.forEach(id => {
+				const container = document.getElementById(id);
+				if (container) {
+					let isDown = false;
+					let startX;
+					let scrollLeft;
+
+					container.addEventListener('mousedown', (e) => {
+						isDown = true;
+						startX = e.pageX - container.offsetLeft;
+						scrollLeft = container.scrollLeft;
+					});
+
+					container.addEventListener('mouseleave', () => {
+						isDown = false;
+					});
+
+					container.addEventListener('mouseup', () => {
+						isDown = false;
+					});
+
+					container.addEventListener('mousemove', (e) => {
+						if (!isDown) return;
+						e.preventDefault();
+						const x = e.pageX - container.offsetLeft;
+						const walk = (x - startX) * 2;
+						container.scrollLeft = scrollLeft - walk;
+					});
+				}
+			});
+		</script>
 	</body>
 </html>
