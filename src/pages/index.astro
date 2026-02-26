@@ -1,6 +1,28 @@
 ---
 import '../styles/global.css';
 
+export const prerender = false;
+
+const supportedRoutes = ['en', 'ms', 'id', 'zh-cn', 'zh-tw', 'vi', 'ko', 'ja'];
+const cookieLang = Astro.cookies.get('lang')?.value?.toLowerCase();
+
+const acceptLanguage = (Astro.request.headers.get('accept-language') ?? '').toLowerCase();
+const detectFromHeader = () => {
+  if (acceptLanguage.includes('zh-tw') || acceptLanguage.includes('zh-hant')) return 'zh-tw';
+  if (acceptLanguage.includes('zh-cn') || acceptLanguage.includes('zh-hans') || acceptLanguage.includes('zh')) return 'zh-cn';
+  if (acceptLanguage.includes('ms')) return 'ms';
+  if (acceptLanguage.includes('id')) return 'id';
+  if (acceptLanguage.includes('vi')) return 'vi';
+  if (acceptLanguage.includes('ko')) return 'ko';
+  if (acceptLanguage.includes('ja')) return 'ja';
+  if (acceptLanguage.includes('en')) return 'en';
+  return 'en';
+};
+
+const routeLang = supportedRoutes.includes(cookieLang ?? '') ? (cookieLang as string) : detectFromHeader();
+Astro.cookies.set('lang', routeLang, { path: '/', maxAge: 60 * 60 * 24 * 365 });
+return Astro.redirect(`/${routeLang}/`);
+
 const defaultLang = 'zh-CN';
 const countries = ['sg', 'my', 'th', 'id', 'ph'];
 const locations = ['all', 'downtown', 'marina', 'orchard', 'sentosa', 'clarke'];
