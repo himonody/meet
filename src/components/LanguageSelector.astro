@@ -1,0 +1,17 @@
+---
+const { languageRoutes, defaultLang, currentLangShort } = Astro.props;
+---
+
+<div class="language-selector fixed top-4 left-4 z-[60]">
+  <button id="languageTrigger" class="language-btn flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-all" type="button">
+    <span class="language-globe">🌐</span>
+    <span class="tracking-[0.2em]" id="currentLanguage">{currentLangShort}</span>
+  </button>
+  <div id="languageDropdown" class="language-dropdown hidden mt-2 w-56 rounded-2xl glass-dark neon-border-purple neon-glow-purple overflow-hidden">
+    {languageRoutes.map((lang) => (
+      <button class={`language-item ${lang.code === defaultLang ? 'language-selected' : ''}`} data-lang={lang.label} data-short={lang.short} data-code={lang.code} data-slug={lang.slug} type="button">
+        {lang.label}
+      </button>
+    ))}
+  </div>
+</div>

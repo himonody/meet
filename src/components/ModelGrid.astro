@@ -1,0 +1,44 @@
+---
+const { t, models } = Astro.props;
+---
+
+<main class="pt-0 px-4 max-w-7xl mx-auto" id="mainContent">
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-2 pb-6">
+    {models.map((model) => (
+      <div class="model-card group cursor-pointer fade-in" data-model-id={model.id}>
+        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] transition-all duration-500 group-hover:scale-[1.03] cinematic-shadow group-hover:neon-glow-purple">
+          <img
+            src={model.image}
+            alt={model.name}
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 gradient-overlay"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-[var(--purple-deep)]/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+
+          <div class="absolute top-3 right-3">
+            <span class={`vip-badge tag-${model.tag} px-3 py-1 rounded-full text-xs font-bold text-black uppercase tracking-wide`}>
+              {t.labels[model.tag] ?? model.tag}
+            </span>
+          </div>
+
+          <div class="absolute bottom-0 left-0 right-0 p-4">
+            <h3 class="text-lg font-bold mb-1 text-white drop-shadow-lg">{model.name}</h3>
+            <div class="flex items-center gap-1.5 text-sm text-[var(--neon-purple)]">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              <span class="font-medium" data-location={model.location}>{t.locations[model.location]}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="text-center py-8">
+    <button class="px-8 py-3 rounded-full glass hover:neon-border-gold hover:neon-glow-gold transition-all font-semibold" data-label="loadMore">
+      {t.labels.loadMore}
+    </button>
+  </div>
+</main>

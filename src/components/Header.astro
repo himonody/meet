@@ -1,0 +1,22 @@
+---
+const { t, countries } = Astro.props;
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-[var(--neon-purple)]/30">
+  <div class="max-w-7xl mx-auto px-4 py-3 pl-24">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex-1 overflow-x-auto scrollbar-hide smooth-scroll" id="countryScroll">
+        <div class="flex gap-2 min-w-max">
+          {countries.map((country, index) => (
+            <button
+              class={`country-tab px-6 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-underline text-[var(--neon-gold)]' : 'text-[var(--text-secondary)] hover:text-white'}`}
+              data-country={country}
+            >
+              {t.countries[country]}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
