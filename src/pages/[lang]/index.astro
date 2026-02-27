@@ -65,10 +65,10 @@ const t = i18n[defaultLang];
 				sihanouk: 1002,
 				kuala_lumpur: 2001
 			};
-			const locationLabelMap = {
-				1001: '金边',
-				1002: '西港',
-				2001: '吉隆坡'
+			const locationKeyById = {
+				1001: 'phnom_penh',
+				1002: 'sihanouk',
+				2001: 'kuala_lumpur'
 			};
 			const venueIdMap = {
 				spa: [1002101, 1002102, 1002103, 1002104, 1002105, 1002106, 1001101, 1001102, 1001103, 2001101],
@@ -92,6 +92,7 @@ const t = i18n[defaultLang];
 
 			const modelGrid = document.getElementById('modelGrid');
 			const loadMoreButton = document.getElementById('loadMoreButton');
+			let loadMoreObserver;
 			const initialCountryKey = document.querySelector('.country-tab')?.dataset.country || 'kh';
 			let currentCountryId = countryIdMap[initialCountryKey] ?? 1;
 			let currentCategoryId = categoryIdMap[currentCategory] ?? 1;
@@ -104,7 +105,8 @@ const t = i18n[defaultLang];
 			const pageLimit = 20;
 
 			function getLocationLabel(locationId) {
-				return locationLabelMap[locationId] || `${locationId ?? ''}`;
+				const key = locationKeyById[locationId];
+				return (key && currentI18n.locations?.[key]) || `${locationId ?? ''}`;
 			}
 
 			function resolveBadgeTag(badgeCode) {
@@ -113,6 +115,7 @@ const t = i18n[defaultLang];
 
 			function buildProfileCard(profile) {
 				const badgeTag = resolveBadgeTag(profile.badge_code);
+				const locationKey = locationKeyById[profile.location_id];
 				const locationLabel = getLocationLabel(profile.location_id);
 				const card = document.createElement('div');
 				card.className = 'model-card group cursor-pointer fade-in';
@@ -125,6 +128,8 @@ const t = i18n[defaultLang];
 				card.dataset.profileHeight = profile.height_cm ?? '';
 				card.dataset.profileWeight = profile.weight_kg ?? '';
 				card.dataset.profileBust = profile.bust_size ?? '';
+				card.dataset.profileServiceItems = profile.service_items ?? '';
+				card.dataset.profileBioDescription = profile.bio_description ?? '';
 				card.innerHTML = `
 					<div class="relative overflow-hidden rounded-2xl aspect-[3/4] transition-all duration-500 group-hover:scale-[1.03] cinematic-shadow group-hover:neon-glow-purple">
 						<img
@@ -141,12 +146,18 @@ const t = i18n[defaultLang];
 							</span>
 						</div>
 						<div class="absolute bottom-0 left-0 right-0 p-4">
-							<h3 class="text-lg font-bold mb-1 text-white drop-shadow-lg">${profile.nickname || ''}</h3>
-							<div class="flex items-center gap-1.5 text-sm text-[var(--neon-purple)]">
+							<h3 class="text-lg font-bold text-white drop-shadow-lg">${profile.nickname || ''}</h3>
+							<div class="flex items-center gap-1.5 text-sm text-[var(--neon-purple)] mt-0.5">
 								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
 									<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
 								</svg>
-								<span class="font-medium" data-location="${profile.location_id}" data-location-label="${locationLabel}">${locationLabel}</span>
+								<span class="font-medium" data-location="${locationKey || ''}" data-location-label="${locationLabel}">${locationLabel}</span>
+							</div>
+							<div class="mt-1 text-xs text-white/80 flex flex-wrap gap-x-3 gap-y-1">
+								<span>${currentI18n.labels.age}: ${profile.age ?? '-'}</span>
+								<span>${currentI18n.labels.height}: ${profile.height_cm ?? '-'}${profile.height_cm ? ' cm' : ''}</span>
+								<span>${currentI18n.labels.weight}: ${profile.weight_kg ?? '-'}${profile.weight_kg ? ' kg' : ''}</span>
+								<span>${currentI18n.labels.bust}: ${profile.bust_size ?? '-'}</span>
 							</div>
 						</div>
 					</div>
@@ -166,22 +177,46 @@ const t = i18n[defaultLang];
 				});
 			}
 
+			function setLoadMoreVisible(visible) {
+				if (!loadMoreButton) return;
+				loadMoreButton.style.display = visible ? '' : 'none';
+				if (!visible) {
+					loadMoreObserver?.disconnect();
+				}
+			}
+
+			function ensureLoadMoreObserver() {
+				if (!loadMoreButton) return;
+				if (!('IntersectionObserver' in window)) return;
+				if (loadMoreObserver) return;
+				loadMoreObserver = new IntersectionObserver(
+					(entries) => {
+						if (entries.some((entry) => entry.isIntersecting)) {
+							fetchProfiles();
+						}
+					},
+					{ rootMargin: '200px' }
+				);
+				loadMoreObserver.observe(loadMoreButton);
+			}
+
 			function updateLoadMoreState() {
 				if (!loadMoreButton) return;
-				if (!hasMore) {
-					loadMoreButton.classList.add('opacity-50');
-					loadMoreButton.disabled = true;
-					return;
-				}
-				loadMoreButton.classList.remove('opacity-50');
+				const hasAnyProfiles = (modelGrid?.children?.length ?? 0) > 0;
+				const shouldShow = hasAnyProfiles && hasMore && !isLoading;
+				setLoadMoreVisible(shouldShow);
 				loadMoreButton.disabled = isLoading;
+				loadMoreButton.classList.toggle('opacity-50', !hasMore);
+				if (shouldShow) {
+					ensureLoadMoreObserver();
+				}
 			}
 
 			async function fetchProfiles({ reset = false } = {}) {
 				if (isLoading) return;
 				if (!hasMore && !reset) return;
 				isLoading = true;
-				updateLoadMoreState();
+				setLoadMoreVisible(false);
 				if (reset) {
 					currentCursor = null;
 					hasMore = true;
@@ -234,6 +269,113 @@ const t = i18n[defaultLang];
 					tab.classList.remove('text-[var(--text-secondary)]');
 					fetchProfiles({ reset: true });
 				});
+			});
+
+			const telegramLink = document.getElementById('telegramLink');
+			const contactBackdrop = document.getElementById('contactBackdrop');
+			const contactSheet = document.getElementById('contactSheet');
+			const contactList = document.getElementById('contactList');
+			const contactSheetClose = document.getElementById('contactSheetClose');
+			let isContactSheetOpen = false;
+			let isContactLoading = false;
+
+			function closeContactSheet() {
+				if (!contactSheet || !contactBackdrop) return;
+				isContactSheetOpen = false;
+				contactSheet.classList.add('hidden');
+				contactBackdrop.classList.add('hidden');
+			}
+
+			function openContactSheet() {
+				if (!contactSheet || !contactBackdrop) return;
+				isContactSheetOpen = true;
+				contactSheet.classList.remove('hidden');
+				contactBackdrop.classList.remove('hidden');
+			}
+
+			function renderContacts(contacts) {
+				if (!contactList) return;
+				contactList.innerHTML = '';
+				contacts.forEach((item) => {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className =
+						'w-full text-left px-4 py-3 rounded-2xl glass-dark border border-[var(--neon-purple)]/20 hover:border-[var(--neon-gold)]/40 hover:neon-glow-purple transition-all flex items-center justify-between gap-3';
+					button.innerHTML = `
+						<div class="min-w-0">
+							<div class="text-sm font-semibold text-white truncate">${item.contact_name || item.contact_url || ''}</div>
+						</div>
+						<span class="shrink-0 w-9 h-9 rounded-full bg-[var(--neon-gold)] flex items-center justify-center shadow-lg shadow-black/40">
+							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+							</svg>
+						</span>
+					`;
+					button.addEventListener('click', () => {
+						if (item.contact_url) {
+							window.open(item.contact_url, '_blank', 'noopener,noreferrer');
+							closeContactSheet();
+						}
+					});
+					contactList.appendChild(button);
+				});
+			}
+
+			async function loadContacts() {
+				if (isContactLoading) return;
+				isContactLoading = true;
+				try {
+					const response = await fetch('/api/contact', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ country_id: currentCountryId })
+					});
+					const result = await response.json();
+					if (!response.ok || !result.ok || !Array.isArray(result.data)) {
+						throw new Error(result?.error || 'Request failed');
+					}
+					renderContacts(result.data);
+				} catch (error) {
+					console.error('Failed to load contact', error);
+					if (contactList) {
+						contactList.innerHTML = '';
+					}
+				} finally {
+					isContactLoading = false;
+				}
+			}
+
+			telegramLink?.addEventListener('click', async (event) => {
+				event.preventDefault();
+				if (isContactSheetOpen) {
+					closeContactSheet();
+					return;
+				}
+				openContactSheet();
+				await loadContacts();
+			});
+
+			contactBackdrop?.addEventListener('click', closeContactSheet);
+			contactSheetClose?.addEventListener('click', closeContactSheet);
+
+			const recruitLink = document.getElementById('recruitLink');
+			recruitLink?.addEventListener('click', async (event) => {
+				event.preventDefault();
+				try {
+					const response = await fetch('/api/contact', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ contact_type: 0 })
+					});
+					const result = await response.json();
+					const first = Array.isArray(result?.data) ? result.data[0] : null;
+					if (!response.ok || !result.ok || !first?.contact_url) {
+						throw new Error(result?.error || 'Request failed');
+					}
+					window.open(first.contact_url, '_blank', 'noopener,noreferrer');
+				} catch (error) {
+					console.error('Failed to load recruit contact', error);
+				}
 			});
 
 			// Filter tags
@@ -385,7 +527,9 @@ const t = i18n[defaultLang];
 				const modalHeight = document.getElementById('modalHeight');
 				const modalWeight = document.getElementById('modalWeight');
 				const modalBust = document.getElementById('modalBust');
-				if (!modalImage || !modalName || !modalLocation || !modalTag || !modalAge || !modalHeight || !modalWeight || !modalBust) return;
+				const modalServiceItems = document.getElementById('modalServiceItems');
+				const modalBioDescription = document.getElementById('modalBioDescription');
+				if (!modalImage || !modalName || !modalLocation || !modalTag || !modalAge || !modalHeight || !modalWeight || !modalBust || !modalServiceItems || !modalBioDescription) return;
 
 				modalImage.src = image;
 				modalImage.alt = name;
@@ -397,6 +541,50 @@ const t = i18n[defaultLang];
 				modalHeight.textContent = card.dataset.profileHeight ? `${card.dataset.profileHeight} cm` : '-';
 				modalWeight.textContent = card.dataset.profileWeight ? `${card.dataset.profileWeight} kg` : '-';
 				modalBust.textContent = card.dataset.profileBust ? `${card.dataset.profileBust}` : '-';
+				if (card.dataset.profileServiceItems) {
+					const raw = `${card.dataset.profileServiceItems}`;
+					const items = raw
+						.split(/[,\n]+/)
+						.map((value) => value.trim())
+						.filter(Boolean);
+					modalServiceItems.innerHTML = '';
+					const tagClasses = [
+						'bg-[var(--neon-gold)]/20 text-[var(--neon-gold)] border-[var(--neon-gold)]/40',
+						'bg-[var(--neon-purple)]/20 text-[var(--neon-purple)] border-[var(--neon-purple)]/40',
+						'bg-[var(--neon-magenta)]/20 text-[var(--neon-magenta)] border-[var(--neon-magenta)]/40',
+						'bg-cyan-400/15 text-cyan-200 border-cyan-300/30'
+					];
+					items.forEach((text, index) => {
+						const span = document.createElement('span');
+						span.className = `px-3 py-1 rounded-full text-xs font-semibold border ${tagClasses[index % tagClasses.length]}`;
+						span.textContent = text;
+						modalServiceItems.appendChild(span);
+					});
+				} else {
+					modalServiceItems.textContent = '-';
+				}
+				if (card.dataset.profileBioDescription) {
+					const rawBio = `${card.dataset.profileBioDescription}`;
+					const bioItems = rawBio
+						.split(/[,\n]+/)
+						.map((value) => value.trim())
+						.filter(Boolean);
+					modalBioDescription.innerHTML = '';
+					const bioTagClasses = [
+						'bg-[var(--neon-gold)]/20 text-[var(--neon-gold)] border-[var(--neon-gold)]/40',
+						'bg-[var(--neon-purple)]/20 text-[var(--neon-purple)] border-[var(--neon-purple)]/40',
+						'bg-[var(--neon-magenta)]/20 text-[var(--neon-magenta)] border-[var(--neon-magenta)]/40',
+						'bg-cyan-400/15 text-cyan-200 border-cyan-300/30'
+					];
+					bioItems.forEach((text, index) => {
+						const span = document.createElement('span');
+						span.className = `px-3 py-1 rounded-full text-xs font-semibold border ${bioTagClasses[index % bioTagClasses.length]}`;
+						span.textContent = text;
+						modalBioDescription.appendChild(span);
+					});
+				} else {
+					modalBioDescription.textContent = '-';
+				}
 
 				modal.classList.remove('hidden');
 				modal.classList.add('flex');
@@ -479,17 +667,7 @@ const t = i18n[defaultLang];
 			});
 
 			loadMoreButton?.addEventListener('click', () => fetchProfiles());
-			if ('IntersectionObserver' in window && loadMoreButton) {
-				const observer = new IntersectionObserver(
-					(entries) => {
-						if (entries.some((entry) => entry.isIntersecting)) {
-							fetchProfiles();
-						}
-					},
-					{ rootMargin: '200px' }
-				);
-				observer.observe(loadMoreButton);
-			}
+			setLoadMoreVisible(false);
 
 			applyLanguage(defaultLang);
 			fetchProfiles({ reset: true });
