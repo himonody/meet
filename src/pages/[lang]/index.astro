@@ -70,6 +70,10 @@ const t = i18n[defaultLang];
 				1002: 'sihanouk',
 				2001: 'kuala_lumpur'
 			};
+			const allowedLocationIdsByCountryId = {
+				1: [null, 1001, 1002],
+				2: [null, 2001]
+			};
 			const venueIdMap = {
 				spa: [1002101, 1002102, 1002103, 1002104, 1002105, 1002106, 1001101, 1001102, 1001103, 2001101],
 				ktv: [1002201, 1002202, 1001201],
@@ -212,6 +216,27 @@ const t = i18n[defaultLang];
 				}
 			}
 
+			function syncLocationOptions() {
+				const allowed = allowedLocationIdsByCountryId[currentCountryId] || [null];
+				document.querySelectorAll('.location-item').forEach((item) => {
+					const key = item.dataset.location;
+					const value = locationIdMap[key] ?? null;
+					const isAllowed = allowed.includes(value);
+					item.style.display = isAllowed ? '' : 'none';
+				});
+
+				if (!allowed.includes(currentLocationId)) {
+					currentLocationId = null;
+					document.querySelectorAll('.location-item').forEach((i) => i.classList.remove('language-selected'));
+					const allItem = document.querySelector('.location-item[data-location="all"]');
+					allItem?.classList.add('language-selected');
+					const currentLocation = document.getElementById('currentLocation');
+					if (currentLocation) {
+						currentLocation.textContent = currentI18n.locations?.all || currentLocation.textContent;
+					}
+				}
+			}
+
 			async function fetchProfiles({ reset = false } = {}) {
 				if (isLoading) return;
 				if (!hasMore && !reset) return;
@@ -261,6 +286,7 @@ const t = i18n[defaultLang];
 				tab.addEventListener('click', () => {
 					const key = tab.dataset.country;
 					currentCountryId = countryIdMap[key] ?? currentCountryId;
+					syncLocationOptions();
 					document.querySelectorAll('.country-tab').forEach(t => {
 						t.classList.remove('neon-underline', 'text-[var(--neon-gold)]');
 						t.classList.add('text-[var(--text-secondary)]');
@@ -469,9 +495,10 @@ const t = i18n[defaultLang];
 			const locationTrigger = document.getElementById('locationTrigger');
 			const locationDropdown = document.getElementById('locationDropdown');
 			const currentLocation = document.getElementById('currentLocation');
+			let locationOriginalParent = null;
 
 			if (locationTrigger && locationDropdown) {
-				const originalParent = locationDropdown.parentElement;
+				locationOriginalParent = locationDropdown.parentElement;
 				locationTrigger.addEventListener('click', (e) => {
 					e.stopPropagation();
 					locationDropdown.classList.toggle('hidden');
@@ -483,8 +510,8 @@ const t = i18n[defaultLang];
 						locationDropdown.style.top = `${rect.bottom + 8}px`;
 						locationDropdown.style.zIndex = '70';
 						document.body.appendChild(locationDropdown);
-					} else if (originalParent && !originalParent.contains(locationDropdown)) {
-						originalParent.appendChild(locationDropdown);
+					} else if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
+						locationOriginalParent.appendChild(locationDropdown);
 					}
 				});
 
@@ -497,8 +524,8 @@ const t = i18n[defaultLang];
 						item.classList.add('language-selected');
 						locationDropdown.classList.add('hidden');
 						locationDropdown.classList.remove('dropdown-open');
-						if (originalParent && !originalParent.contains(locationDropdown)) {
-							originalParent.appendChild(locationDropdown);
+						if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
+							locationOriginalParent.appendChild(locationDropdown);
 						}
 						fetchProfiles({ reset: true });
 					});
@@ -670,6 +697,7 @@ const t = i18n[defaultLang];
 			setLoadMoreVisible(false);
 
 			applyLanguage(defaultLang);
+			syncLocationOptions();
 			fetchProfiles({ reset: true });
 			updateFilterSpacer();
 			window.addEventListener('resize', updateFilterSpacer);
@@ -677,8 +705,8 @@ const t = i18n[defaultLang];
 				if (locationDropdown && !locationDropdown.classList.contains('hidden')) {
 					locationDropdown.classList.add('hidden');
 					locationDropdown.classList.remove('dropdown-open');
-					if (originalParent && !originalParent.contains(locationDropdown)) {
-						originalParent.appendChild(locationDropdown);
+					if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
+						locationOriginalParent.appendChild(locationDropdown);
 					}
 				}
 			});
