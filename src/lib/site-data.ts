@@ -9,9 +9,9 @@ export const languageRoutes = [
   { slug: 'ja', code: 'ja', short: 'JA', label: '日本語', hreflang: 'ja', html: 'ja' }
 ];
 
-export const countries = ['kh', 'my'];
-export const locations = ['all', 'phnom_penh', 'sihanouk', 'kuala_lumpur'];
-export const categories = ['spa', 'ktv', 'delivery', 'partyGirls', 'seaTrip'];
+export const countries = ['kh', 'my'] as const;
+export const locations = ['all', 'phnom_penh', 'sihanouk', 'kuala_lumpur'] as const;
+export const categories = ['spa', 'ktv', 'delivery', 'partyGirls', 'seaTrip'] as const;
 
 export const i18n = {
   'zh-CN': {

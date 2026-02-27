@@ -60,7 +60,6 @@ const t = i18n[defaultLang];
 				seaTrip: 5
 			};
 			const locationIdMap = {
-				all: null,
 				phnom_penh: 1001,
 				sihanouk: 1002,
 				kuala_lumpur: 2001
@@ -71,10 +70,37 @@ const t = i18n[defaultLang];
 				2001: 'kuala_lumpur'
 			};
 			const allowedLocationIdsByCountryId = {
-				1: [null, 1001, 1002],
-				2: [null, 2001]
+				1: [1001, 1002],
+				2: [2001]
 			};
-			const venueIdMap = {
+			const defaultLocationIdByCountryId = {
+				1: 1002,
+				2: 2001
+			};
+			const venueIdMapByLocationId = {
+				1001: {
+					spa: [1001101, 1001102, 1001103],
+					ktv: [1001201],
+					delivery: [],
+					partyGirls: [],
+					seaTrip: []
+				},
+				1002: {
+					spa: [1002101, 1002102, 1002103, 1002104, 1002105, 1002106],
+					ktv: [1002201, 1002202],
+					delivery: [],
+					partyGirls: [],
+					seaTrip: []
+				},
+				2001: {
+					spa: [2001101],
+					ktv: [],
+					delivery: [],
+					partyGirls: [],
+					seaTrip: []
+				}
+			};
+			const venueIdMasterByCategory = {
 				spa: [1002101, 1002102, 1002103, 1002104, 1002105, 1002106, 1001101, 1001102, 1001103, 2001101],
 				ktv: [1002201, 1002202, 1001201],
 				delivery: [],
@@ -100,8 +126,8 @@ const t = i18n[defaultLang];
 			const initialCountryKey = document.querySelector('.country-tab')?.dataset.country || 'kh';
 			let currentCountryId = countryIdMap[initialCountryKey] ?? 1;
 			let currentCategoryId = categoryIdMap[currentCategory] ?? 1;
-			let currentLocationId = null;
-			let currentVenueId = venueIdMap[currentCategory]?.[0] ?? 1002101;
+			let currentLocationId = defaultLocationIdByCountryId[currentCountryId] ?? 1002;
+			let currentVenueId = venueIdMapByLocationId[Number(currentLocationId)]?.[currentCategory]?.[0] ?? null;
 			let currentBadgeCode = badgeCodeMap.filterHot;
 			let currentCursor = null;
 			let isLoading = false;
@@ -196,7 +222,7 @@ const t = i18n[defaultLang];
 				loadMoreObserver = new IntersectionObserver(
 					(entries) => {
 						if (entries.some((entry) => entry.isIntersecting)) {
-							fetchProfiles();
+							fetchProfiles({ reason: 'intersection-observer' });
 						}
 					},
 					{ rootMargin: '200px' }
@@ -216,30 +242,39 @@ const t = i18n[defaultLang];
 				}
 			}
 
-			function syncLocationOptions() {
-				const allowed = allowedLocationIdsByCountryId[currentCountryId] || [null];
-				document.querySelectorAll('.location-item').forEach((item) => {
-					const key = item.dataset.location;
-					const value = locationIdMap[key] ?? null;
+			function syncLocationOptions(reason = 'sync') {
+				const allowed = allowedLocationIdsByCountryId[currentCountryId] || [];
+				document.querySelectorAll('.location-tab').forEach((tab) => {
+					const key = tab.dataset.location;
+					const value = locationIdMap[key];
 					const isAllowed = allowed.includes(value);
-					item.style.display = isAllowed ? '' : 'none';
+					tab.style.display = isAllowed ? '' : 'none';
 				});
 
-				if (!allowed.includes(currentLocationId)) {
-					currentLocationId = null;
-					document.querySelectorAll('.location-item').forEach((i) => i.classList.remove('language-selected'));
-					const allItem = document.querySelector('.location-item[data-location="all"]');
-					allItem?.classList.add('language-selected');
-					const currentLocation = document.getElementById('currentLocation');
-					if (currentLocation) {
-						currentLocation.textContent = currentI18n.locations?.all || currentLocation.textContent;
-					}
+				if (!allowed.includes(Number(currentLocationId))) {
+					const fallback = defaultLocationIdByCountryId[currentCountryId] ?? currentLocationId;
+					console.log('[syncLocationOptions] fallback', {
+						reason,
+						currentCountryId,
+						allowed,
+						before: currentLocationId,
+						after: fallback
+					});
+					currentLocationId = fallback;
+				}
+
+				document.querySelectorAll('.location-tab').forEach((i) => i.classList.remove('language-selected'));
+				const selectedKey = locationKeyById[currentLocationId];
+				if (selectedKey) {
+					const selectedItem = document.querySelector(`.location-tab[data-location="${selectedKey}"]`);
+					selectedItem?.classList.add('language-selected');
 				}
 			}
 
-			async function fetchProfiles({ reset = false } = {}) {
+			async function fetchProfiles({ reset = false, reason = 'unknown' } = {}) {
 				if (isLoading) return;
 				if (!hasMore && !reset) return;
+				if (currentCategoryId <= 2 && !currentVenueId) return;
 				isLoading = true;
 				setLoadMoreVisible(false);
 				if (reset) {
@@ -256,10 +291,10 @@ const t = i18n[defaultLang];
 						is_active: true,
 						limit: pageLimit,
 						...(currentCursor ? { cursor: currentCursor } : {}),
-						...(currentLocationId ? { location_id: currentLocationId } : {}),
+						location_id: currentLocationId,
 						...(currentVenueId ? { venue_id: currentVenueId } : {})
 					};
-					console.log('profiles payload', payload);
+					console.log('[fetchProfiles]', { reason, reset, location_id: payload.location_id, country_id: payload.country_id });
 					const response = await fetch('/api/profiles', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
@@ -286,14 +321,14 @@ const t = i18n[defaultLang];
 				tab.addEventListener('click', () => {
 					const key = tab.dataset.country;
 					currentCountryId = countryIdMap[key] ?? currentCountryId;
-					syncLocationOptions();
+					syncLocationOptions('country-tab');
 					document.querySelectorAll('.country-tab').forEach(t => {
 						t.classList.remove('neon-underline', 'text-[var(--neon-gold)]');
 						t.classList.add('text-[var(--text-secondary)]');
 					});
 					tab.classList.add('neon-underline', 'text-[var(--neon-gold)]');
 					tab.classList.remove('text-[var(--text-secondary)]');
-					fetchProfiles({ reset: true });
+					fetchProfiles({ reset: true, reason: 'country-tab' });
 				});
 			});
 
@@ -415,7 +450,7 @@ const t = i18n[defaultLang];
 					});
 					tag.classList.add('filter-active', 'neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
 					tag.classList.remove('glass');
-					fetchProfiles({ reset: true });
+					fetchProfiles({ reset: true, reason: 'filter-tag' });
 				});
 			});
 
@@ -434,34 +469,41 @@ const t = i18n[defaultLang];
 					tab.classList.remove('glass');
 
 					updateVenueSection(category);
-					fetchProfiles({ reset: true });
+					fetchProfiles({ reset: true, reason: 'category-tab' });
 				});
 			});
 
 			function updateVenueSection(category, dict = currentI18n) {
 				const venueSection = document.getElementById('venueSection');
 				const venueContainer = document.getElementById('venueContainer');
-				const categoryVenues = dict.venues[category] || [];
-				if (!categoryVenues.length) {
+				const allVenueNames = dict.venues[category] || [];
+				const masterIds = venueIdMasterByCategory[category] || [];
+				const venueNameById = new Map(masterIds.map((id, index) => [id, allVenueNames[index] || `${id}`]));
+				const categoryVenueIds = venueIdMapByLocationId[Number(currentLocationId)]?.[category] || [];
+				const categoryVenues = categoryVenueIds.map((id) => venueNameById.get(id) || `${id}`);
+				const count = Math.min(categoryVenues.length, categoryVenueIds.length);
+				if (!allVenueNames.length) {
 					venueSection.style.display = 'none';
 					currentVenueId = null;
 					currentVenue = null;
 				} else {
 					venueSection.style.display = 'block';
-					
-					const categoryVenueIds = venueIdMap[category] || [];
+					if (!count) {
+						venueSection.style.display = 'none';
+						currentVenueId = null;
+						currentVenue = null;
+						updateFilterSpacer();
+						return;
+					}
 					venueContainer.innerHTML = categoryVenues
-						.map((venue, index) => {
-							const venueId = categoryVenueIds[index] ?? categoryVenueIds[0] ?? currentVenueId;
-							return `
-								<button class="venue-pill px-6 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-magenta neon-glow-magenta text-[var(--neon-magenta)]' : 'glass hover:neon-glow-purple'}" data-venue="${venue}" data-venue-id="${venueId}">
-									${venue}
-								</button>
-							`;
-						})
+						.slice(0, count)
+						.map(
+							(venue, index) =>
+								`<button class="venue-pill px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-magenta neon-glow-magenta text-[var(--neon-magenta)]' : 'glass'}" data-venue="${venue}" data-venue-id="${categoryVenueIds[index]}">${venue}</button>`
+						)
 						.join('');
 
-					currentVenueId = categoryVenueIds[0] ?? currentVenueId;
+					currentVenueId = categoryVenueIds[0] ?? null;
 					currentVenue = categoryVenues[0] ?? null;
 
 					document.querySelectorAll('.venue-pill').forEach(pill => {
@@ -474,7 +516,7 @@ const t = i18n[defaultLang];
 							pill.classList.remove('glass');
 							currentVenue = pill.dataset.venue;
 							currentVenueId = Number(pill.dataset.venueId) || currentVenueId;
-							fetchProfiles({ reset: true });
+							fetchProfiles({ reset: true, reason: 'venue-pill' });
 						});
 					});
 				}
@@ -491,46 +533,19 @@ const t = i18n[defaultLang];
 				spacer.style.height = `${total}px`;
 			}
 
-			// Location dropdown
-			const locationTrigger = document.getElementById('locationTrigger');
-			const locationDropdown = document.getElementById('locationDropdown');
-			const currentLocation = document.getElementById('currentLocation');
-			let locationOriginalParent = null;
-
-			if (locationTrigger && locationDropdown) {
-				locationOriginalParent = locationDropdown.parentElement;
-				locationTrigger.addEventListener('click', (e) => {
-					e.stopPropagation();
-					locationDropdown.classList.toggle('hidden');
-					locationDropdown.classList.toggle('dropdown-open');
-					if (!locationDropdown.classList.contains('hidden')) {
-						const rect = locationTrigger.getBoundingClientRect();
-						locationDropdown.style.position = 'fixed';
-						locationDropdown.style.left = `${rect.left}px`;
-						locationDropdown.style.top = `${rect.bottom + 8}px`;
-						locationDropdown.style.zIndex = '70';
-						document.body.appendChild(locationDropdown);
-					} else if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
-						locationOriginalParent.appendChild(locationDropdown);
-					}
+			// Location tabs
+			document.querySelectorAll('.location-tab').forEach((tab) => {
+				tab.addEventListener('click', () => {
+					const key = tab.dataset.location;
+					const nextLocationId = Number(locationIdMap[key]);
+					if (!Number.isFinite(nextLocationId)) return;
+					console.log('[location click]', { before: currentLocationId, after: nextLocationId, key });
+					currentLocationId = nextLocationId;
+					syncLocationOptions('location-tab');
+					updateVenueSection(currentCategory);
+					fetchProfiles({ reset: true, reason: 'location-tab' });
 				});
-
-				document.querySelectorAll('.location-item').forEach(item => {
-					item.addEventListener('click', () => {
-						currentLocation.textContent = item.textContent;
-						const key = item.dataset.location;
-						currentLocationId = locationIdMap[key] ?? null;
-						document.querySelectorAll('.location-item').forEach(i => i.classList.remove('language-selected'));
-						item.classList.add('language-selected');
-						locationDropdown.classList.add('hidden');
-						locationDropdown.classList.remove('dropdown-open');
-						if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
-							locationOriginalParent.appendChild(locationDropdown);
-						}
-						fetchProfiles({ reset: true });
-					});
-				});
-			}
+			});
 
 			// Initialize venue section
 			updateVenueSection('spa');
@@ -658,14 +673,10 @@ const t = i18n[defaultLang];
 					el.textContent = dict.labels[key] || el.textContent;
 				});
 
-				document.querySelectorAll('.location-item').forEach(item => {
+				document.querySelectorAll('.location-tab').forEach(item => {
 					const key = item.dataset.location;
 					item.textContent = dict.locations[key] || key;
 				});
-				if (currentLocation) {
-					const selected = document.querySelector('.location-item.language-selected');
-					currentLocation.textContent = selected ? selected.textContent : dict.locations.all;
-				}
 
 				updateVenueSection(currentCategory, dict);
 			}
@@ -693,22 +704,17 @@ const t = i18n[defaultLang];
 				});
 			});
 
-			loadMoreButton?.addEventListener('click', () => fetchProfiles());
+			loadMoreButton?.addEventListener('click', () => fetchProfiles({ reason: 'load-more' }));
 			setLoadMoreVisible(false);
 
 			applyLanguage(defaultLang);
-			syncLocationOptions();
-			fetchProfiles({ reset: true });
+			syncLocationOptions('init');
+			fetchProfiles({ reset: true, reason: 'init' });
 			updateFilterSpacer();
 			window.addEventListener('resize', updateFilterSpacer);
 			window.addEventListener('scroll', () => {
-				if (locationDropdown && !locationDropdown.classList.contains('hidden')) {
-					locationDropdown.classList.add('hidden');
-					locationDropdown.classList.remove('dropdown-open');
-					if (locationOriginalParent && !locationOriginalParent.contains(locationDropdown)) {
-						locationOriginalParent.appendChild(locationDropdown);
-					}
-				}
+				languageDropdown.classList.add('hidden');
+				languageDropdown.classList.remove('dropdown-open');
 			});
 
 			document.addEventListener('click', () => {
