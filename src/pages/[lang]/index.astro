@@ -1,7 +1,7 @@
 ---
 import '../../styles/global.css';
 import { ContactBar, FilterSection, Header, LanguageSelector, ModelGrid, ModelModal } from '../../components';
-import { categories, countries, i18n, languageRoutes, locations, models } from '../../lib/site-data';
+import { categories, countries, i18n, languageRoutes, locations } from '../../lib/site-data';
 
 export const prerender = true;
 
@@ -39,37 +39,215 @@ const t = i18n[defaultLang];
 
 		<div id="filterSpacer" class="h-[196px]"></div>
 
-		<ModelGrid t={t} models={models} />
+		<ModelGrid t={t} models={[]} />
 		<ModelModal t={t} />
 		<ContactBar t={t} />
 
-		<script define:vars={{ defaultLang, i18n, models, currentLangShort, currentLanguageRoute }}>
+		<script define:vars={{ defaultLang, i18n, currentLangShort, currentLanguageRoute }}>
 			let currentI18n = i18n[defaultLang];
-			let currentCategory = 'club';
+			let currentCategory = 'spa';
 			let currentLanguage = '简体中文';
 			let currentVenue = null;
+			const countryIdMap = {
+				kh: 1,
+				my: 2
+			};
+			const categoryIdMap = {
+				spa: 1,
+				ktv: 2,
+				delivery: 3,
+				partyGirls: 4,
+				seaTrip: 5
+			};
+			const locationIdMap = {
+				all: null,
+				phnom_penh: 1001,
+				sihanouk: 1002,
+				kuala_lumpur: 2001
+			};
+			const locationLabelMap = {
+				1001: '金边',
+				1002: '西港',
+				2001: '吉隆坡'
+			};
+			const venueIdMap = {
+				spa: [1002101, 1002102, 1002103, 1002104, 1002105, 1002106, 1001101, 1001102, 1001103, 2001101],
+				ktv: [1002201, 1002202, 1001201],
+				delivery: [],
+				partyGirls: [],
+				seaTrip: []
+			};
+			const badgeCodeMap = {
+				filterHot: 1,
+				filterNew: 2,
+				filterRecommend: 3,
+				filterYoung: 4
+			};
+			const badgeTagByCode = {
+				1: 'filterHot',
+				2: 'filterNew',
+				3: 'filterRecommend',
+				4: 'filterYoung'
+			};
+
+			const modelGrid = document.getElementById('modelGrid');
+			const loadMoreButton = document.getElementById('loadMoreButton');
+			const initialCountryKey = document.querySelector('.country-tab')?.dataset.country || 'kh';
+			let currentCountryId = countryIdMap[initialCountryKey] ?? 1;
+			let currentCategoryId = categoryIdMap[currentCategory] ?? 1;
+			let currentLocationId = null;
+			let currentVenueId = venueIdMap[currentCategory]?.[0] ?? 1002101;
+			let currentBadgeCode = badgeCodeMap.filterHot;
+			let currentCursor = null;
+			let isLoading = false;
+			let hasMore = true;
+			const pageLimit = 20;
+
+			function getLocationLabel(locationId) {
+				return locationLabelMap[locationId] || `${locationId ?? ''}`;
+			}
+
+			function resolveBadgeTag(badgeCode) {
+				return badgeTagByCode[badgeCode] || 'filterHot';
+			}
+
+			function buildProfileCard(profile) {
+				const badgeTag = resolveBadgeTag(profile.badge_code);
+				const locationLabel = getLocationLabel(profile.location_id);
+				const card = document.createElement('div');
+				card.className = 'model-card group cursor-pointer fade-in';
+				card.dataset.profileId = `${profile.id}`;
+				card.dataset.profileName = profile.nickname || '';
+				card.dataset.profileImage = profile.photo_main_url || '';
+				card.dataset.profileLocation = locationLabel;
+				card.dataset.profileBadge = badgeTag;
+				card.dataset.profileAge = profile.age ?? '';
+				card.dataset.profileHeight = profile.height_cm ?? '';
+				card.dataset.profileWeight = profile.weight_kg ?? '';
+				card.dataset.profileBust = profile.bust_size ?? '';
+				card.innerHTML = `
+					<div class="relative overflow-hidden rounded-2xl aspect-[3/4] transition-all duration-500 group-hover:scale-[1.03] cinematic-shadow group-hover:neon-glow-purple">
+						<img
+							src="${profile.photo_main_url || ''}"
+							alt="${profile.nickname || ''}"
+							class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+							loading="lazy"
+						/>
+						<div class="absolute inset-0 gradient-overlay"></div>
+						<div class="absolute inset-0 bg-gradient-to-t from-[var(--purple-deep)]/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+						<div class="absolute top-3 right-3">
+							<span class="vip-badge tag-${badgeTag} px-3 py-1 rounded-full text-xs font-bold text-black uppercase tracking-wide">
+								${currentI18n.labels[badgeTag] ?? badgeTag}
+							</span>
+						</div>
+						<div class="absolute bottom-0 left-0 right-0 p-4">
+							<h3 class="text-lg font-bold mb-1 text-white drop-shadow-lg">${profile.nickname || ''}</h3>
+							<div class="flex items-center gap-1.5 text-sm text-[var(--neon-purple)]">
+								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+									<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+								</svg>
+								<span class="font-medium" data-location="${profile.location_id}" data-location-label="${locationLabel}">${locationLabel}</span>
+							</div>
+						</div>
+					</div>
+				`;
+				return card;
+			}
+
+			function clearProfiles() {
+				if (!modelGrid) return;
+				modelGrid.innerHTML = '';
+			}
+
+			function appendProfiles(rows) {
+				if (!modelGrid) return;
+				rows.forEach((row) => {
+					modelGrid.appendChild(buildProfileCard(row));
+				});
+			}
+
+			function updateLoadMoreState() {
+				if (!loadMoreButton) return;
+				if (!hasMore) {
+					loadMoreButton.classList.add('opacity-50');
+					loadMoreButton.disabled = true;
+					return;
+				}
+				loadMoreButton.classList.remove('opacity-50');
+				loadMoreButton.disabled = isLoading;
+			}
+
+			async function fetchProfiles({ reset = false } = {}) {
+				if (isLoading) return;
+				if (!hasMore && !reset) return;
+				isLoading = true;
+				updateLoadMoreState();
+				if (reset) {
+					currentCursor = null;
+					hasMore = true;
+					clearProfiles();
+				}
+				try {
+					const payload = {
+						lang: defaultLang,
+						country_id: currentCountryId,
+						category_id: currentCategoryId,
+						badge_code: currentBadgeCode,
+						is_active: true,
+						limit: pageLimit,
+						...(currentCursor ? { cursor: currentCursor } : {}),
+						...(currentLocationId ? { location_id: currentLocationId } : {}),
+						...(currentVenueId ? { venue_id: currentVenueId } : {})
+					};
+					console.log('profiles payload', payload);
+					const response = await fetch('/api/profiles', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload)
+					});
+					const result = await response.json();
+					if (!response.ok || !result.ok) {
+						throw new Error(result?.error || 'Request failed');
+					}
+					const rows = Array.isArray(result.data) ? result.data : [];
+					appendProfiles(rows);
+					currentCursor = result.next_cursor || null;
+					hasMore = Boolean(currentCursor) && rows.length >= pageLimit;
+				} catch (error) {
+					console.error('Failed to load profiles', error);
+				} finally {
+					isLoading = false;
+					updateLoadMoreState();
+				}
+			}
 
 			// Country tabs
 			document.querySelectorAll('.country-tab').forEach(tab => {
 				tab.addEventListener('click', () => {
+					const key = tab.dataset.country;
+					currentCountryId = countryIdMap[key] ?? currentCountryId;
 					document.querySelectorAll('.country-tab').forEach(t => {
 						t.classList.remove('neon-underline', 'text-[var(--neon-gold)]');
 						t.classList.add('text-[var(--text-secondary)]');
 					});
 					tab.classList.add('neon-underline', 'text-[var(--neon-gold)]');
 					tab.classList.remove('text-[var(--text-secondary)]');
+					fetchProfiles({ reset: true });
 				});
 			});
 
 			// Filter tags
 			document.querySelectorAll('.filter-tag').forEach(tag => {
 				tag.addEventListener('click', () => {
+					const label = tag.dataset.label;
+					currentBadgeCode = badgeCodeMap[label] ?? currentBadgeCode;
 					document.querySelectorAll('.filter-tag').forEach(t => {
 						t.classList.remove('filter-active', 'neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
 						t.classList.add('glass');
 					});
 					tag.classList.add('filter-active', 'neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
 					tag.classList.remove('glass');
+					fetchProfiles({ reset: true });
 				});
 			});
 
@@ -78,6 +256,7 @@ const t = i18n[defaultLang];
 				tab.addEventListener('click', () => {
 					const category = tab.dataset.category;
 					currentCategory = category;
+					currentCategoryId = categoryIdMap[category] ?? currentCategoryId;
 					
 					document.querySelectorAll('.category-tab').forEach(t => {
 						t.classList.remove('neon-border-gold', 'neon-glow-gold', 'text-[var(--neon-gold)]');
@@ -87,23 +266,35 @@ const t = i18n[defaultLang];
 					tab.classList.remove('glass');
 
 					updateVenueSection(category);
+					fetchProfiles({ reset: true });
 				});
 			});
 
 			function updateVenueSection(category, dict = currentI18n) {
 				const venueSection = document.getElementById('venueSection');
 				const venueContainer = document.getElementById('venueContainer');
-				if (category === 'privateSession') {
+				const categoryVenues = dict.venues[category] || [];
+				if (!categoryVenues.length) {
 					venueSection.style.display = 'none';
+					currentVenueId = null;
+					currentVenue = null;
 				} else {
 					venueSection.style.display = 'block';
 					
-					const categoryVenues = dict.venues[category] || [];
-					venueContainer.innerHTML = categoryVenues.map((venue, index) => `
-						<button class="venue-pill px-6 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-magenta neon-glow-magenta text-[var(--neon-magenta)]' : 'glass hover:neon-glow-purple'}" data-venue="${venue}">
-							${venue}
-						</button>
-					`).join('');
+					const categoryVenueIds = venueIdMap[category] || [];
+					venueContainer.innerHTML = categoryVenues
+						.map((venue, index) => {
+							const venueId = categoryVenueIds[index] ?? categoryVenueIds[0] ?? currentVenueId;
+							return `
+								<button class="venue-pill px-6 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${index === 0 ? 'neon-border-magenta neon-glow-magenta text-[var(--neon-magenta)]' : 'glass hover:neon-glow-purple'}" data-venue="${venue}" data-venue-id="${venueId}">
+									${venue}
+								</button>
+							`;
+						})
+						.join('');
+
+					currentVenueId = categoryVenueIds[0] ?? currentVenueId;
+					currentVenue = categoryVenues[0] ?? null;
 
 					document.querySelectorAll('.venue-pill').forEach(pill => {
 						pill.addEventListener('click', () => {
@@ -114,6 +305,8 @@ const t = i18n[defaultLang];
 							pill.classList.add('neon-border-magenta', 'neon-glow-magenta', 'text-[var(--neon-magenta)]');
 							pill.classList.remove('glass');
 							currentVenue = pill.dataset.venue;
+							currentVenueId = Number(pill.dataset.venueId) || currentVenueId;
+							fetchProfiles({ reset: true });
 						});
 					});
 				}
@@ -156,6 +349,8 @@ const t = i18n[defaultLang];
 				document.querySelectorAll('.location-item').forEach(item => {
 					item.addEventListener('click', () => {
 						currentLocation.textContent = item.textContent;
+						const key = item.dataset.location;
+						currentLocationId = locationIdMap[key] ?? null;
 						document.querySelectorAll('.location-item').forEach(i => i.classList.remove('language-selected'));
 						item.classList.add('language-selected');
 						locationDropdown.classList.add('hidden');
@@ -163,36 +358,49 @@ const t = i18n[defaultLang];
 						if (originalParent && !originalParent.contains(locationDropdown)) {
 							originalParent.appendChild(locationDropdown);
 						}
+						fetchProfiles({ reset: true });
 					});
 				});
 			}
 
 			// Initialize venue section
-			updateVenueSection('club');
+			updateVenueSection('spa');
 
 			// Modal functionality
 			const modal = document.getElementById('modelModal');
 			const closeModalBtn = document.getElementById('closeModal');
+			modelGrid?.addEventListener('click', (event) => {
+				const card = event.target.closest('.model-card');
+				if (!card) return;
+				const image = card.dataset.profileImage || '';
+				const name = card.dataset.profileName || '';
+				const location = card.dataset.profileLocation || '';
+				const badgeTag = card.dataset.profileBadge || 'filterHot';
 
-			document.querySelectorAll('.model-card').forEach(card => {
-				card.addEventListener('click', () => {
-					const modelId = parseInt(card.dataset.modelId);
-					const model = models.find(m => m.id === modelId);
-					
-					if (model) {
-						document.getElementById('modalImage').src = model.image;
-						document.getElementById('modalImage').alt = model.name;
-						document.getElementById('modalName').textContent = model.name;
-						document.getElementById('modalLocation').textContent = currentI18n.locations[model.location] || model.location;
-						const modalTag = document.getElementById('modalTag');
-						modalTag.textContent = currentI18n.labels[model.tag] || model.tag;
-						modalTag.className = `vip-badge tag-${model.tag} inline-block px-4 py-1.5 rounded-full text-sm font-bold text-black uppercase tracking-wide mb-4`;
-						
-						modal.classList.remove('hidden');
-						modal.classList.add('flex');
-						document.body.style.overflow = 'hidden';
-					}
-				});
+				const modalImage = document.getElementById('modalImage');
+				const modalName = document.getElementById('modalName');
+				const modalLocation = document.getElementById('modalLocation');
+				const modalTag = document.getElementById('modalTag');
+				const modalAge = document.getElementById('modalAge');
+				const modalHeight = document.getElementById('modalHeight');
+				const modalWeight = document.getElementById('modalWeight');
+				const modalBust = document.getElementById('modalBust');
+				if (!modalImage || !modalName || !modalLocation || !modalTag || !modalAge || !modalHeight || !modalWeight || !modalBust) return;
+
+				modalImage.src = image;
+				modalImage.alt = name;
+				modalName.textContent = name;
+				modalLocation.textContent = location;
+				modalTag.textContent = currentI18n.labels[badgeTag] || badgeTag;
+				modalTag.className = `vip-badge tag-${badgeTag} inline-block px-4 py-1.5 rounded-full text-sm font-bold text-black uppercase tracking-wide mb-4`;
+				modalAge.textContent = card.dataset.profileAge ? `${card.dataset.profileAge}` : '-';
+				modalHeight.textContent = card.dataset.profileHeight ? `${card.dataset.profileHeight} cm` : '-';
+				modalWeight.textContent = card.dataset.profileWeight ? `${card.dataset.profileWeight} kg` : '-';
+				modalBust.textContent = card.dataset.profileBust ? `${card.dataset.profileBust}` : '-';
+
+				modal.classList.remove('hidden');
+				modal.classList.add('flex');
+				document.body.style.overflow = 'hidden';
 			});
 
 			closeModalBtn.addEventListener('click', () => {
@@ -226,7 +434,8 @@ const t = i18n[defaultLang];
 
 				document.querySelectorAll('[data-location]').forEach(el => {
 					const key = el.dataset.location;
-					el.textContent = dict.locations[key] || key;
+					const mapped = dict.locations[key];
+					el.textContent = mapped || el.dataset.locationLabel || key;
 				});
 
 				document.querySelectorAll('[data-label]').forEach(el => {
@@ -269,7 +478,21 @@ const t = i18n[defaultLang];
 				});
 			});
 
+			loadMoreButton?.addEventListener('click', () => fetchProfiles());
+			if ('IntersectionObserver' in window && loadMoreButton) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						if (entries.some((entry) => entry.isIntersecting)) {
+							fetchProfiles();
+						}
+					},
+					{ rootMargin: '200px' }
+				);
+				observer.observe(loadMoreButton);
+			}
+
 			applyLanguage(defaultLang);
+			fetchProfiles({ reset: true });
 			updateFilterSpacer();
 			window.addEventListener('resize', updateFilterSpacer);
 			window.addEventListener('scroll', () => {

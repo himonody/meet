@@ -9,41 +9,42 @@ export const languageRoutes = [
   { slug: 'ja', code: 'ja', short: 'JA', label: '日本語', hreflang: 'ja', html: 'ja' }
 ];
 
-export const countries = ['sg', 'my', 'th', 'id', 'ph'];
-export const locations = ['all', 'downtown', 'marina', 'orchard', 'sentosa', 'clarke'];
-export const categories = ['club', 'ktv', 'nightParty', 'privateSession'];
+export const countries = ['kh', 'my'];
+export const locations = ['all', 'phnom_penh', 'sihanouk', 'kuala_lumpur'];
+export const categories = ['spa', 'ktv', 'delivery', 'partyGirls', 'seaTrip'];
 
 export const i18n = {
   'zh-CN': {
     countries: {
-      sg: '新加坡',
-      my: '马来西亚',
-      th: '泰国',
-      id: '印度尼西亚',
-      ph: '菲律宾'
+      kh: '柬埔寨',
+      my: '马来西亚'
     },
     locations: {
       all: '全部地区',
-      downtown: '市中心',
-      marina: '滨海湾',
-      orchard: '乌节路',
-      sentosa: '圣淘沙',
-      clarke: '克拉码头'
+      phnom_penh: '金边',
+      sihanouk: '西港',
+      kuala_lumpur: '吉隆坡'
     },
     categories: {
-      club: '水疗会所',
+      spa: '水疗会所',
       ktv: 'KTV',
-      nightParty: '夜场派对',
-      privateSession: '私人专场'
+      delivery: '外送',
+      partyGirls: '嗨妹冰妹',
+      seaTrip: '出海游玩'
     },
     venues: {
-      club: ['天空会所', '金色会馆', '水晶殿堂', '钻石名邸'],
-      ktv: ['皇室KTV', '金嗓之夜', '明星卡拉OK', '奢华包厢'],
-      nightParty: ['霓虹之夜', '日蚀', '午夜玫瑰', '地下之城']
+      spa: ['威尼斯国际会所', '名玺水汇', '贵族水疗', '帝豪会所', '7号公馆', '大浪淘沙', '天空之城', '汤泉水疗', '九天瑶池', '壹号汤泉'],
+      ktv: ['红馆', '嘉年华', '名流KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: '加载更多',
+      age: '年龄',
       height: '身高',
+      weight: '体重',
+      bust: '胸围',
       languages: '语言',
       availability: '状态',
       availableNow: '可预约',
@@ -60,34 +61,35 @@ export const i18n = {
   },
   'zh-TW': {
     countries: {
-      sg: '新加坡',
-      my: '馬來西亞',
-      th: '泰國',
-      id: '印度尼西亞',
-      ph: '菲律賓'
+      kh: '柬埔寨',
+      my: '馬來西亞'
     },
     locations: {
       all: '全部地區',
-      downtown: '市中心',
-      marina: '濱海灣',
-      orchard: '烏節路',
-      sentosa: '聖淘沙',
-      clarke: '克拉碼頭'
+      phnom_penh: '金邊',
+      sihanouk: '西港',
+      kuala_lumpur: '吉隆坡'
     },
     categories: {
-      club: '水療會所',
+      spa: '水療會所',
       ktv: 'KTV',
-      nightParty: '夜場派對',
-      privateSession: '私人專場'
+      delivery: '外送',
+      partyGirls: '嗨妹冰妹',
+      seaTrip: '出海遊玩'
     },
     venues: {
-      club: ['天空會所', '金色會館', '水晶殿堂', '鑽石名邸'],
-      ktv: ['皇室KTV', '金嗓之夜', '明星卡拉OK', '奢華包廂'],
-      nightParty: ['霓虹之夜', '日蝕', '午夜玫瑰', '地下之城']
+      spa: ['威尼斯國際會所', '名璽水匯', '貴族水療', '帝豪會所', '7號公館', '大浪淘沙', '天空之城', '湯泉水療', '九天瑤池', '壹號湯泉'],
+      ktv: ['紅館', '嘉年華', '名流KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: '載入更多',
+      age: '年齡',
       height: '身高',
+      weight: '體重',
+      bust: '胸圍',
       languages: '語言',
       availability: '狀態',
       availableNow: '可預約',
@@ -104,34 +106,35 @@ export const i18n = {
   },
   en: {
     countries: {
-      sg: 'Singapore',
-      my: 'Malaysia',
-      th: 'Thailand',
-      id: 'Indonesia',
-      ph: 'Philippines'
+      kh: 'Cambodia',
+      my: 'Malaysia'
     },
     locations: {
       all: 'All Locations',
-      downtown: 'Downtown',
-      marina: 'Marina Bay',
-      orchard: 'Orchard',
-      sentosa: 'Sentosa',
-      clarke: 'Clarke Quay'
+      phnom_penh: 'Phnom Penh',
+      sihanouk: 'Sihanoukville',
+      kuala_lumpur: 'Kuala Lumpur',
     },
     categories: {
-      club: 'Club',
+      spa: 'Spa Club',
       ktv: 'KTV',
-      nightParty: 'Night Party',
-      privateSession: 'Private Session'
+      delivery: 'Delivery',
+      partyGirls: 'Party Girls',
+      seaTrip: 'Sea Trip'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: 'Load More',
+      age: 'Age',
       height: 'Height',
+      weight: 'Weight',
+      bust: 'Bust',
       languages: 'Languages',
       availability: 'Availability',
       availableNow: 'Available Now',
@@ -148,34 +151,35 @@ export const i18n = {
   },
   ms: {
     countries: {
-      sg: 'Singapura',
-      my: 'Malaysia',
-      th: 'Thailand',
-      id: 'Indonesia',
-      ph: 'Filipina'
+      kh: 'Kemboja',
+      my: 'Malaysia'
     },
     locations: {
       all: 'Semua Lokasi',
-      downtown: 'Pusat Bandar',
-      marina: 'Marina Bay',
-      orchard: 'Orchard',
-      sentosa: 'Sentosa',
-      clarke: 'Clarke Quay'
+      phnom_penh: 'Phnom Penh',
+      sihanouk: 'Sihanoukville',
+      kuala_lumpur: 'Kuala Lumpur'
     },
     categories: {
-      club: 'Kelab',
+      spa: 'Kelab Spa',
       ktv: 'KTV',
-      nightParty: 'Parti Malam',
-      privateSession: 'Sesi Peribadi'
+      delivery: 'Penghantaran',
+      partyGirls: 'Gadis Parti',
+      seaTrip: 'Lawatan Laut'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: 'Muat Lagi',
+      age: 'Umur',
       height: 'Ketinggian',
+      weight: 'Berat',
+      bust: 'Dada',
       languages: 'Bahasa',
       availability: 'Ketersediaan',
       availableNow: 'Tersedia Kini',
@@ -192,34 +196,35 @@ export const i18n = {
   },
   id: {
     countries: {
-      sg: 'Singapura',
-      my: 'Malaysia',
-      th: 'Thailand',
-      id: 'Indonesia',
-      ph: 'Filipina'
+      kh: 'Kamboja',
+      my: 'Malaysia'
     },
     locations: {
       all: 'Semua Lokasi',
-      downtown: 'Pusat Kota',
-      marina: 'Marina Bay',
-      orchard: 'Orchard',
-      sentosa: 'Sentosa',
-      clarke: 'Clarke Quay'
+      phnom_penh: 'Phnom Penh',
+      sihanouk: 'Sihanoukville',
+      kuala_lumpur: 'Kuala Lumpur'
     },
     categories: {
-      club: 'Klub',
+      spa: 'Klub Spa',
       ktv: 'KTV',
-      nightParty: 'Pesta Malam',
-      privateSession: 'Sesi Privat'
+      delivery: 'Pengantaran',
+      partyGirls: 'Gadis Pesta',
+      seaTrip: 'Wisata Laut'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: 'Muat Lagi',
+      age: 'Usia',
       height: 'Tinggi',
+      weight: 'Berat',
+      bust: 'Dada',
       languages: 'Bahasa',
       availability: 'Ketersediaan',
       availableNow: 'Tersedia Sekarang',
@@ -236,34 +241,35 @@ export const i18n = {
   },
   vi: {
     countries: {
-      sg: 'Singapore',
-      my: 'Malaysia',
-      th: 'Thái Lan',
-      id: 'Indonesia',
-      ph: 'Philippines'
+      kh: 'Campuchia',
+      my: 'Malaysia'
     },
     locations: {
       all: 'Tất cả khu vực',
-      downtown: 'Trung tâm',
-      marina: 'Marina Bay',
-      orchard: 'Orchard',
-      sentosa: 'Sentosa',
-      clarke: 'Clarke Quay'
+      phnom_penh: 'Phnom Penh',
+      sihanouk: 'Sihanoukville',
+      kuala_lumpur: 'Kuala Lumpur'
     },
     categories: {
-      club: 'Câu lạc bộ',
+      spa: 'CLB Spa',
       ktv: 'KTV',
-      nightParty: 'Tiệc đêm',
-      privateSession: 'Phiên riêng'
+      delivery: 'Giao tận nơi',
+      partyGirls: 'Tiệc Gái',
+      seaTrip: 'Du thuyền'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: 'Tải thêm',
+      age: 'Tuổi',
       height: 'Chiều cao',
+      weight: 'Cân nặng',
+      bust: 'Vòng ngực',
       languages: 'Ngôn ngữ',
       availability: 'Tình trạng',
       availableNow: 'Sẵn sàng',
@@ -280,34 +286,35 @@ export const i18n = {
   },
   ko: {
     countries: {
-      sg: '싱가포르',
-      my: '말레이시아',
-      th: '태국',
-      id: '인도네시아',
-      ph: '필리핀'
+      kh: '캄보디아',
+      my: '말레이시아'
     },
     locations: {
       all: '전체 지역',
-      downtown: '도심',
-      marina: '마리나 베이',
-      orchard: '오차드',
-      sentosa: '센토사',
-      clarke: '클라키 키'
+      phnom_penh: '프놈펜',
+      sihanouk: '시아누크빌',
+      kuala_lumpur: '쿠알라룸푸르'
     },
     categories: {
-      club: '클럽',
+      spa: '스파 클럽',
       ktv: 'KTV',
-      nightParty: '나이트 파티',
-      privateSession: '프라이빗 세션'
+      delivery: '출장',
+      partyGirls: '파티 걸스',
+      seaTrip: '바다 투어'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: '더 보기',
+      age: '나이',
       height: '키',
+      weight: '체중',
+      bust: '가슴',
       languages: '언어',
       availability: '상태',
       availableNow: '예약 가능',
@@ -324,34 +331,35 @@ export const i18n = {
   },
   ja: {
     countries: {
-      sg: 'シンガポール',
-      my: 'マレーシア',
-      th: 'タイ',
-      id: 'インドネシア',
-      ph: 'フィリピン'
+      kh: 'カンボジア',
+      my: 'マレーシア'
     },
     locations: {
       all: 'すべてのエリア',
-      downtown: 'ダウンタウン',
-      marina: 'マリーナベイ',
-      orchard: 'オーチャード',
-      sentosa: 'セントーサ',
-      clarke: 'クラーク・キー'
+      phnom_penh: 'プノンペン',
+      sihanouk: 'シアヌークビル',
+      kuala_lumpur: 'クアラルンプール'
     },
     categories: {
-      club: 'クラブ',
+      spa: 'スパクラブ',
       ktv: 'KTV',
-      nightParty: 'ナイトパーティー',
-      privateSession: 'プライベートセッション'
+      delivery: 'デリバリー',
+      partyGirls: 'パーティーガール',
+      seaTrip: '海ツアー'
     },
     venues: {
-      club: ['Sky Palace', 'Golden Lounge', 'Crystal Heights', 'Diamond Elite'],
-      ktv: ['Royal KTV', 'Golden Voice', 'Star Karaoke', 'Luxury Box'],
-      nightParty: ['Neon Nights', 'Eclipse', 'Midnight Rose', 'The Underground']
+      spa: ['Venice International Club', 'Mingxi Spa', 'Noble Spa', 'Dihao Club', 'No.7 Mansion', 'Big Wave Spa', 'Sky City', 'Hot Spring Spa', 'Nine Heavens Pool', 'No.1 Hot Spring'],
+      ktv: ['Red Pavilion', 'Carnival', 'Celebrities KTV'],
+      delivery: [],
+      partyGirls: [],
+      seaTrip: []
     },
     labels: {
       loadMore: 'もっと見る',
+      age: '年齢',
       height: '身長',
+      weight: '体重',
+      bust: 'バスト',
       languages: '言語',
       availability: 'ステータス',
       availableNow: '予約可能',

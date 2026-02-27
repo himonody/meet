@@ -3,7 +3,7 @@ const { t, models } = Astro.props;
 ---
 
 <main class="pt-0 px-4 max-w-7xl mx-auto" id="mainContent">
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-2 pb-6">
+  <div id="modelGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pt-2 pb-6">
     {models.map((model) => (
       <div class="model-card group cursor-pointer fade-in" data-model-id={model.id}>
         <div class="relative overflow-hidden rounded-2xl aspect-[3/4] transition-all duration-500 group-hover:scale-[1.03] cinematic-shadow group-hover:neon-glow-purple">
@@ -37,7 +37,11 @@ const { t, models } = Astro.props;
   </div>
 
   <div class="text-center py-8">
-    <button class="px-8 py-3 rounded-full glass hover:neon-border-gold hover:neon-glow-gold transition-all font-semibold" data-label="loadMore">
+    <button
+      id="loadMoreButton"
+      class="px-8 py-3 rounded-full glass hover:neon-border-gold hover:neon-glow-gold transition-all font-semibold"
+      data-label="loadMore"
+    >
       {t.labels.loadMore}
     </button>
   </div>

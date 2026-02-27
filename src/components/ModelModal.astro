@@ -30,12 +30,20 @@ const { t } = Astro.props;
 
           <div class="space-y-4">
             <div class="flex items-center gap-3">
-              <span class="text-[var(--text-secondary)] text-sm" data-label="height">{t.labels.height}</span>
-              <span class="font-semibold text-white">170 cm</span>
+              <span class="text-[var(--text-secondary)] text-sm" data-label="age">{t.labels.age}</span>
+              <span id="modalAge" class="font-semibold text-white"></span>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-[var(--text-secondary)] text-sm" data-label="languages">{t.labels.languages}</span>
-              <span class="font-semibold text-white">English, Mandarin</span>
+              <span class="text-[var(--text-secondary)] text-sm" data-label="height">{t.labels.height}</span>
+              <span id="modalHeight" class="font-semibold text-white"></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-[var(--text-secondary)] text-sm" data-label="weight">{t.labels.weight}</span>
+              <span id="modalWeight" class="font-semibold text-white"></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-[var(--text-secondary)] text-sm" data-label="bust">{t.labels.bust}</span>
+              <span id="modalBust" class="font-semibold text-white"></span>
             </div>
             <div class="flex items-center gap-3">
               <span class="text-[var(--text-secondary)] text-sm" data-label="availability">{t.labels.availability}</span>
